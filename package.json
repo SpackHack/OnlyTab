@@ -1,0 +1,28 @@
+{
+  "name": "onlytab",
+  "version": "1.0.0",
+  "description": "A Firefox extension that only closes new YouTube tabs if their is already a YouTube tab open.",
+  "main": "background.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SpackHack/OnlyTab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SpackHack/OnlyTab/issues"
+  },
+  "homepage": "https://github.com/SpackHack/OnlyTab#readme",
+  "devDependencies": {
+    "@types/webextension-polyfill": "^0.12.4",
+    "esbuild": "^0.27.2",
+    "esbuild-copy-files-plugin": "^1.1.0",
+    "typescript": "^5.9.3",
+    "web-ext": "^9.2.0",
+    "webextension-polyfill": "^0.12.0"
+  }
+}
