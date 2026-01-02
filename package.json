@@ -1,7 +1,7 @@
 {
   "name": "onlytab",
   "version": "1.0.0",
-  "description": "A Firefox extension that only closes new YouTube tabs if their is already a YouTube tab open.",
+  "description": "A Firefox extension that only allow on tab of a Domain to be open.",
   "main": "background.js",
   "scripts": {
     "build": "node build.js"

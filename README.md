@@ -1,7 +1,6 @@
 # OnlyTab
 
-A Firefox extension that only closes new YouTube tabs if their is already
-a YouTube tab open.
+A Firefox extension that only allow on tab of a Domain to be open.
 
 ## Build
 

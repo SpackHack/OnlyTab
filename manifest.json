@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "OnlyTab",
   "version": "1.0",
-  "description": "Allows only one tab of YouTube to be open",
+  "description": "Allows only one tab of a Domain to be open",
   "permissions": ["tabs", "storage", "notifications"],
   "background": {
     "scripts": ["dist/background.js"]

@@ -1,17 +1,14 @@
 import browser from "webextension-polyfill";
+import { getDomains, getStats, setDomains, setStats, Stats } from "./storage";
 
 let domains: string[];
 
 async function init() {
-  let { urls } = await browser.storage.local.get("urls");
+  domains = await getDomains();
 
-  console.log(urls);
-
-  if (urls === undefined) {
+  if (domains.length === 0) {
     domains = ["youtube.com"];
-    await browser.storage.local.set({ urls: domains });
-  } else {
-    domains = urls as string[];
+    await setDomains(domains);
   }
 
   return true;
@@ -65,34 +62,50 @@ function createFilter(domains: string[]): string[] {
   return filter;
 }
 
-type a = {
-  domains: [];
-};
-
 async function updateStats(domain: string): Promise<number> {
-  let { stats } = await browser.storage.local.get("stats");
-
-  let statsMap;
+  let stats: Stats = await getStats();
 
   if (stats === undefined) {
-    statsMap = new Map();
-  } else {
-    statsMap = stats as Map<string, number>;
+    stats = { domains: new Map() };
   }
 
-  let count: number = statsMap.get(domain) ?? 0;
+  let count: number = stats.domains.get(domain) ?? 0;
 
   count += 1;
 
-  statsMap.set(domain, count);
+  stats.domains.set(domain, count);
 
-  await browser.storage.local.set({ stats: statsMap });
+  await setStats(stats);
 
   return count;
 }
 
+function storageUpdate(
+  changes: Record<string, browser.Storage.StorageChange>,
+  areaName: string,
+) {
+  if (areaName !== "local") {
+    return;
+  }
+
+  if (changes["domains"] !== undefined) {
+    // update var and tab on update listener
+    domains = changes["domains"].newValue as string[];
+
+    let urlFilter = createFilter(domains);
+
+    browser.tabs.onUpdated.removeListener(checkDomains);
+    browser.tabs.onUpdated.addListener(checkDomains, {
+      urls: urlFilter,
+      properties: ["url"],
+    });
+  }
+}
+
 init().then(() => {
   let urlFilter = createFilter(domains);
+
+  browser.storage.onChanged.addListener(storageUpdate);
 
   browser.tabs.onUpdated.addListener(checkDomains, {
     urls: urlFilter,
