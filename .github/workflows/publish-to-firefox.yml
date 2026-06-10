@@ -1,0 +1,45 @@
+name: Publish to Firefox Add-ons Store
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Create web-ext artifact
+        run: npx web-ext build --source-dir dist --artifacts-dir web-ext-artifacts --overwrite-dest
+
+      - name: Get extension ID and version
+        id: extension-info
+        run: |
+          EXTENSION_ID=$(jq -r '.browser_specific_settings.gecko.id' manifest.json)
+          VERSION=$(jq -r '.version' manifest.json)
+          echo "extension_id=$EXTENSION_ID" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Publish to Firefox Add-ons Store
+        uses: fregante/firefox-addon-action@v1
+        with:
+          addon-id: ${{ steps.extension-info.outputs.extension_id }}
+          version: ${{ steps.extension-info.outputs.version }}
+          source: web-ext-artifacts
+          jwt-issuer: ${{ secrets.AMO_ISSUER }}
+          jwt-secret: ${{ secrets.AMO_SECRET }}
+          channel: listed
