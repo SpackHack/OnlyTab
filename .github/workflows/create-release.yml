@@ -1,0 +1,42 @@
+name: Create Release on Tag
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get tag version
+        id: tag
+        run: |
+          TAG_NAME=${{ github.ref_name }}
+          # Remove 'v' prefix if present
+          VERSION=${TAG_NAME#v}
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag_name }}
+          name: Release ${{ steps.tag.outputs.version }}
+          body: |
+            ## OnlyTab ${{ steps.tag.outputs.version }}
+            
+            Firefox extension that allows only one tab of a domain to be open.
+            
+            ### Changes
+            - See [commit history](https://github.com/SpackHack/OnlyTab/commits/${{ steps.tag.outputs.tag_name }}) for details
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
