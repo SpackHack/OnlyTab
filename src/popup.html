@@ -1,9 +1,284 @@
 <!doctype html>
 <html>
+    <head>
+        <meta charset="utf-8">
+        <title>OnlyTab</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+            body {
+                width: 320px;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: #333;
+                min-height: 400px;
+            }
+
+            .container {
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                animation: fadeIn 0.4s ease-out;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .header {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #2c3e50;
+                margin-bottom: 4px;
+            }
+
+            .header p {
+                font-size: 0.85rem;
+                color: #7f8c8d;
+            }
+
+            .header-icon {
+                font-size: 2rem;
+                color: #667eea;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .input-group {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .input-group input {
+                flex: 1;
+                padding: 12px 16px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 0.95rem;
+                transition: all 0.3s ease;
+                outline: none;
+            }
+
+            .input-group input:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            }
+
+            .input-group input::placeholder {
+                color: #bdc3c7;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                border: none;
+                border-radius: 8px;
+                font-size: 0.95rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .btn-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            }
+
+            .btn-primary:active {
+                transform: translateY(0);
+            }
+
+            .btn-danger {
+                background: #ff4757;
+                color: white;
+            }
+
+            .btn-danger:hover {
+                background: #ff3838;
+                transform: scale(1.05);
+            }
+
+            .domain-list {
+                margin-top: 20px;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+
+            .domain-list::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .domain-list::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 3px;
+            }
+
+            .domain-list::-webkit-scrollbar-thumb {
+                background: #667eea;
+                border-radius: 3px;
+            }
+
+            .domain-item {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 14px 16px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                animation: slideIn 0.3s ease-out;
+                border-left: 4px solid #667eea;
+                transition: all 0.3s ease;
+            }
+
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            .domain-item:hover {
+                background: #e9ecef;
+                transform: translateX(5px);
+            }
+
+            .domain-info {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .domain-name {
+                font-weight: 600;
+                color: #2c3e50;
+                font-size: 0.95rem;
+            }
+
+            .domain-count {
+                font-size: 0.8rem;
+                color: #7f8c8d;
+                margin-top: 2px;
+            }
+
+            .remove-btn {
+                background: none;
+                border: none;
+                color: #ff4757;
+                font-size: 1rem;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 50%;
+                transition: all 0.3s ease;
+                line-height: 1;
+            }
+
+            .remove-btn:hover {
+                background: rgba(255, 71, 87, 0.1);
+                transform: rotate(90deg);
+            }
+
+            .remove-btn:active {
+                transform: rotate(0deg) scale(0.9);
+            }
+
+            .empty-state {
+                text-align: center;
+                padding: 40px 20px;
+                color: #7f8c8d;
+                font-size: 0.9rem;
+            }
+
+            .empty-state i {
+                font-size: 2.5rem;
+                margin-bottom: 12px;
+                opacity: 0.5;
+            }
+
+            .stats-summary {
+                margin-top: 20px;
+                padding: 12px 16px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 8px;
+                color: white;
+                font-size: 0.85rem;
+                text-align: center;
+                animation: fadeIn 0.5s ease-out 0.2s both;
+            }
+
+            @keyframes pulse {
+                0%, 100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.7;
+                }
+            }
+
+            .loading {
+                animation: pulse 1.5s ease-in-out infinite;
+            }
+        </style>
+    </head>
     <body>
-        <h1>Stats</h1>
-        <input id="input" type="text" />
-        <button id="add">Add</button>
+        <div class="container">
+            <div class="header">
+                <i class="fas fa-tab header-icon"></i>
+                <div>
+                    <h1>OnlyTab</h1>
+                    <p>Keep only one tab per domain</p>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input 
+                    id="input" 
+                    type="text" 
+                    placeholder="Enter domain (e.g., youtube.com)" 
+                />
+                <button id="add" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add
+                </button>
+            </div>
+
+            <div id="domainList" class="domain-list"></div>
+            
+            <div id="statsSummary" class="stats-summary" style="display: none;"></div>
+        </div>
         <script src="popup.js"></script>
     </body>
 </html>
